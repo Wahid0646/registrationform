@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Contact List</title>
+</head>
+<body>
+    <h1>Contact List</h1>
+    <form id="appointmentForm">
+        <input type="text" placeholder="Name" id="nameInput">
+        <input type="email" placeholder="Email" id="emailInput">
+        <input type="tel" placeholder="Phone Number" id="phoneInput">
+        <button type="submit">Add Contact</button>
+    </form>
+    <ul id="contactList"></ul>
+    <script src="script.js"></script>
+</body>
+</html>
+
+
+// Javascript code here
+let contacts = JSON.parse(localStorage.getItem('contacts') || '[]');
+
+function renderContacts() {
+    document.getElementById('contactList').innerHTML = contacts.map(contact => `
+        <li>
+            <strong>${contact.name}</strong> (${contact.email}) - ${contact.phone}
+            <button class="deleteBtn" onclick="deleteContact(${contact.id})">Delete</button>
+        </li>
+    `).join('');
+}
+
+function deleteContact(contactId) {
+    contacts = contacts.filter(contact => contact.id !== contactId);
+    renderContacts();
+    saveContactsToLocalstorage();
+}
+
+function saveContactsToLocalstorage() {
+    localStorage.setItem('contacts', JSON.stringify(contacts));
+}
+
+document.getElementById('appointmentForm').addEventListener('submit', function (event) {
+    event.preventDefault();
+    const name = document.getElementById('nameInput').value;
+    const email = document.getElementById('emailInput').value;
+    const phone = document.getElementById('phoneInput').value;
+    const id = Date.now();
+    contacts.push({ id, name, email, phone });
+    renderContacts();
+    saveContactsToLocalstorage();
+    document.getElementById('appointmentForm').reset();
+});
+
+window.onload = renderContacts;
